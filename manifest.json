@@ -4,7 +4,7 @@
   "description": "Красивый фотоколлаж с музыкой - подарок для сестры",
   "start_url": "./index.html",
   "display": "standalone",
-  "scope": "/",
+  "scope": "./",
   "background_color": "#F5E6D3",
   "theme_color": "#C97171",
   "orientation": "portrait-primary",
@@ -31,16 +31,19 @@
   "screenshots": [
     {
       "src": "./screenshot-540.png",
-      "sizes": "540x720",
+      "sizes": "540x540",
       "type": "image/png"
     },
     {
       "src": "./screenshot-1080.png",
-      "sizes": "1080x1440",
+      "sizes": "1080x1080",
       "type": "image/png"
     }
   ],
-  "categories": ["lifestyle", "entertainment"],
+  "categories": [
+    "lifestyle",
+    "entertainment"
+  ],
   "shortcuts": [
     {
       "name": "Открыть коллаж",

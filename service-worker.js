@@ -1,8 +1,39 @@
-const CACHE_NAME = 'family-collage-v1';
+const CACHE_NAME = 'family-collage-v2';
 const urlsToCache = [
   './',
   './index.html',
-  './manifest.json'
+  './manifest.json',
+  './icon-192.png',
+  './icon-512.png',
+  './music.mp3',
+  './photos/01.jpg',
+  './photos/02.jpg',
+  './photos/03.jpg',
+  './photos/04.jpg',
+  './photos/05.jpg',
+  './photos/06.jpg',
+  './photos/07.jpg',
+  './photos/08.jpg',
+  './photos/09.jpg',
+  './photos/10.jpg',
+  './photos/11.jpg',
+  './photos/12.jpg',
+  './photos/13.jpg',
+  './photos/14.jpg',
+  './photos/15.jpg',
+  './photos/16.jpg',
+  './photos/17.jpg',
+  './photos/18.jpg',
+  './photos/19.jpg',
+  './photos/20.jpg',
+  './photos/21.jpg',
+  './photos/22.jpg',
+  './photos/23.jpg',
+  './photos/24.jpg',
+  './photos/25.jpg',
+  './photos/26.jpg',
+  './photos/27.jpg',
+  './photos/28.jpg'
 ];
 
 // Установка Service Worker и кеширование файлов

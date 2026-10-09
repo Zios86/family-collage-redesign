@@ -21,6 +21,8 @@
 1. В репозитории нажми "Add file" → "Upload files"
 2. Перетащи все эти файлы:
    - `index.html` ⭐ (главный файл)
+   - папку `photos/` (28 фото)
+   - `music.mp3`
    - `manifest.json`
    - `service-worker.js`
    - `icon-192.png`
@@ -81,7 +83,7 @@ Your site is published at: https://your-username.github.io/family-collage/
 ✅ **Красивая ссылка** - вместо скачивания файла
 ✅ **PWA приложение** - устанавливается на домашний экран
 ✅ **Офлайн работа** - работает даже без интернета
-✅ **Быстрая загрузка** - всё встроено в один файл
+✅ **Быстрая загрузка** - фото подгружаются по мере прокрутки
 ✅ **На всех устройствах** - iOS, Android, планшеты, ПК
 
 ---
@@ -97,10 +99,9 @@ Your site is published at: https://your-username.github.io/family-collage/
 - Меню → "Установить приложение"
 - Если кнопки нет - значит браузер не поддерживает PWA (используй Chrome или Safari)
 
-**Файл слишком большой?**
-- Это нормально - в HTML встроены все фото и музыка
-- GitHub Pages поддерживает файлы до 100MB
-- Твой коллаж ~24MB - всё в порядке
+**Не видно фото или нет музыки?**
+- Проверь, что папка `photos/` и файл `music.mp3` лежат рядом с `index.html`
+- Имена файлов должны совпадать точно (с дефисами: `icon-192.png`, `service-worker.js`)
 
 ---
 
@@ -108,7 +109,9 @@ Your site is published at: https://your-username.github.io/family-collage/
 
 ```
 family-collage/
-├── index.html              (основной коллаж - 24MB)
+├── index.html              (основной коллаж)
+├── photos/                 (28 фото: 01.jpg … 28.jpg)
+├── music.mp3               (фоновая музыка)
 ├── manifest.json           (описание приложения)
 ├── service-worker.js       (для офлайн работы)
 ├── icon-192.png           (иконка для мобильных)
