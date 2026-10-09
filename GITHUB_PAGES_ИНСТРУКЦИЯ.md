@@ -23,6 +23,9 @@
    - `index.html` ⭐ (главный файл)
    - папку `photos/` (28 фото)
    - `music.mp3`
+   - папку `fonts/` (шрифты)
+   - `og-image.jpg` (превью ссылки)
+   - `apple-touch-icon.png` (иконка для iPhone)
    - `manifest.json`
    - `service-worker.js`
    - `icon-192.png`
@@ -88,6 +91,14 @@ Your site is published at: https://your-username.github.io/family-collage/
 
 ---
 
+## 🖼 Превью ссылки в мессенджерах
+
+В `index.html` адрес сайта прописан в тегах `og:url` и `og:image` как
+`https://zios86.github.io/family-collage-redesign/`. Если репозиторий
+называется по-другому — замени этот адрес в обоих тегах, иначе превью не появится.
+
+---
+
 ## 🆘 Если что-то не получилось
 
 **Ссылка не работает?**
@@ -112,6 +123,9 @@ family-collage/
 ├── index.html              (основной коллаж)
 ├── photos/                 (28 фото: 01.jpg … 28.jpg)
 ├── music.mp3               (фоновая музыка)
+├── fonts/                  (шрифты Lobster и Pacifico)
+├── og-image.jpg            (превью ссылки в мессенджерах)
+├── apple-touch-icon.png    (иконка для iPhone)
 ├── manifest.json           (описание приложения)
 ├── service-worker.js       (для офлайн работы)
 ├── icon-192.png           (иконка для мобильных)

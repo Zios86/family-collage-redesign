@@ -1,11 +1,16 @@
-const CACHE_NAME = 'family-collage-v2';
+const CACHE_NAME = 'family-collage-v3';
 const urlsToCache = [
   './',
   './index.html',
   './manifest.json',
   './icon-192.png',
   './icon-512.png',
+  './apple-touch-icon.png',
   './music.mp3',
+  './fonts/lobster-cyrillic.woff2',
+  './fonts/lobster-latin.woff2',
+  './fonts/pacifico-cyrillic.woff2',
+  './fonts/pacifico-latin.woff2',
   './photos/01.jpg',
   './photos/02.jpg',
   './photos/03.jpg',
@@ -64,38 +69,57 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
-// Стратегия Network First, Fallback to Cache
+function putInCache(request, response) {
+  if (response && response.status === 200 && response.type === 'basic') {
+    const copy = response.clone();
+    caches.open(CACHE_NAME).then((cache) => cache.put(request, copy));
+  }
+  return response;
+}
+
+const offlineResponse = () => new Response('Offline - no cached version available', {
+  status: 503,
+  statusText: 'Service Unavailable',
+  headers: new Headers({ 'Content-Type': 'text/plain' })
+});
+
+// Страница и манифест: сначала сеть (чтобы правки доходили), при отсутствии сети — кеш
+function networkFirst(request) {
+  return fetch(request)
+    .then((response) => putInCache(request, response))
+    .catch(() => caches.match(request).then((cached) => cached || offlineResponse()));
+}
+
+// Фото, музыка, шрифты, иконки не меняются: сразу из кеша, без ожидания сети
+function cacheFirst(request) {
+  return caches.match(request).then((cached) => {
+    return cached || fetch(request).then((response) => putInCache(request, response));
+  }).catch(offlineResponse);
+}
+
 self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') {
+  const request = event.request;
+  if (request.method !== 'GET') {
     return;
   }
 
-  event.respondWith(
-    fetch(event.request)
-      .then((response) => {
-        if (!response || response.status !== 200 || response.type === 'error') {
-          return response;
-        }
+  const url = new URL(request.url);
+  if (url.origin !== self.location.origin) {
+    return;
+  }
 
-        const responseToCache = response.clone();
-        caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, responseToCache);
-        });
+  // Аудио запрашивается кусками (Range) — Safari ждёт на них ответ 206,
+  // поэтому берём из сети, а кеш используем только без интернета
+  if (request.headers.has('range')) {
+    event.respondWith(
+      fetch(request).catch(() => caches.match(url.pathname.endsWith('.mp3') ? './music.mp3' : request)
+        .then((cached) => cached || offlineResponse()))
+    );
+    return;
+  }
 
-        return response;
-      })
-      .catch(() => {
-        return caches.match(event.request).then((response) => {
-          return response || new Response('Offline - no cached version available', {
-            status: 503,
-            statusText: 'Service Unavailable',
-            headers: new Headers({
-              'Content-Type': 'text/plain'
-            })
-          });
-        });
-      })
-  );
+  const isPage = request.mode === 'navigate' || /\.(html|json)$/.test(url.pathname);
+  event.respondWith(isPage ? networkFirst(request) : cacheFirst(request));
 });
 
 // Обработка сообщений

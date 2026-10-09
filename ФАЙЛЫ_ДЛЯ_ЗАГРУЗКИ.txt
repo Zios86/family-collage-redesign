@@ -8,6 +8,9 @@
 
    photos/ (папка, 28 фото 01.jpg … 28.jpg)
    music.mp3 (фоновая музыка)
+   fonts/ (папка со шрифтами — чтобы работали без интернета)
+   og-image.jpg (картинка-превью ссылки в мессенджерах)
+   apple-touch-icon.png (иконка для iPhone)
 
 2. manifest.json
    - Описание приложения
@@ -36,7 +39,7 @@
    - Превью большой (1080×1080)
 
 
-ИТОГО: 9 файлов + папка photos/ на загрузку
+ИТОГО: 11 файлов + папки photos/ и fonts/ на загрузку
 
 🔗 После загрузки включи GitHub Pages (Settings → Pages → main branch)
 
@@ -47,7 +50,7 @@
 ================
 □ Создал GitHub аккаунт
 □ Создал репозиторий "family-collage"
-□ Загрузил все файлы и папку photos/
+□ Загрузил все файлы и папки photos/, fonts/
 □ Включил GitHub Pages (Settings → Pages)
 □ Получил ссылку вида: https://username.github.io/family-collage/
 □ Отправил ссылку Ире

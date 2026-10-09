@@ -8,8 +8,62 @@
     <title>С днем рождения, сестренка!</title>
     <link rel="manifest" href="./manifest.json">
     <link rel="icon" type="image/png" href="./icon-192.png">
-    <link href="https://fonts.googleapis.com/css2?family=Lobster:wght@400&family=Pacifico&display=swap" rel="stylesheet">
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png">
+    <meta name="apple-mobile-web-app-title" content="Коллаж">
+    <meta name="theme-color" content="#C97171">
+    <meta name="description" content="Открой конверт — внутри фото и музыка 💌">
+
+    <!-- Превью ссылки в мессенджерах (адреса должны быть абсолютными) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="С днем рождения, сестренка! 🎉">
+    <meta property="og:description" content="Открой конверт — внутри фото и музыка 💌">
+    <meta property="og:url" content="https://zios86.github.io/family-collage-redesign/">
+    <meta property="og:image" content="https://zios86.github.io/family-collage-redesign/og-image.jpg">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:card" content="summary_large_image">
     <style>
+        /* ===== ШРИФТЫ (локальные копии, работают офлайн) ===== */
+        /* Lobster — cyrillic */
+        @font-face {
+            font-family: 'Lobster';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url(./fonts/lobster-cyrillic.woff2) format('woff2');
+            unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+        }
+
+        /* Lobster — latin */
+        @font-face {
+            font-family: 'Lobster';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url(./fonts/lobster-latin.woff2) format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+
+        /* Pacifico — cyrillic */
+        @font-face {
+            font-family: 'Pacifico';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url(./fonts/pacifico-cyrillic.woff2) format('woff2');
+            unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+        }
+
+        /* Pacifico — latin */
+        @font-face {
+            font-family: 'Pacifico';
+            font-style: normal;
+            font-weight: 400;
+            font-display: swap;
+            src: url(./fonts/pacifico-latin.woff2) format('woff2');
+            unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -655,16 +709,17 @@
             }
             
             .collage {
-                grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
-                gap: 12px;
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+                grid-auto-flow: dense;
+                gap: 16px;
             }
-            
-            .size-2 { grid-column: span 1; grid-row: span 1; }
+            /* Крупные фото — во всю ширину экрана */
+            .size-2 { grid-column: span 2; grid-row: span 1; }
             .size-3 { grid-column: span 1; grid-row: span 1; }
-            
+            .photo-item.size-1, .photo-item.size-2, .photo-item.size-3 { aspect-ratio: auto; }
+            /* На телефоне подписи показываем только в полноэкранном просмотре */
             .photo-wish {
-                min-height: 35px;
-                margin-top: 8px;
+                display: none;
             }
             
             .lightbox-content {
@@ -678,7 +733,7 @@
         
         @media (min-width: 481px) and (max-width: 768px) {
             .collage {
-                grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+                grid-template-columns: repeat(3, minmax(0, 1fr));
             }
             
             .size-2 { grid-column: span 1; grid-row: span 1; }
@@ -832,20 +887,66 @@
                 padding: 10px;
             }
         }
+
+        /* Подсказка, если браузер заблокировал музыку */
+        .music-hint {
+            position: fixed;
+            left: 50%;
+            bottom: 24px;
+            transform: translateX(-50%);
+            z-index: 1000;
+            background: rgba(201, 113, 113, 0.95);
+            color: white;
+            border: none;
+            border-radius: 999px;
+            padding: 12px 20px;
+            font-size: 15px;
+            font-family: inherit;
+            box-shadow: 0 6px 20px rgba(201, 113, 113, 0.4);
+            cursor: pointer;
+            white-space: nowrap;
+            animation: timerPulse 1.5s ease-in-out infinite;
+        }
+
+        .music-hint[hidden] {
+            display: none;
+        }
+
+        @media (max-width: 480px) {
+            .music-hint {
+                bottom: 80px;
+            }
+        }
+
+        .photo-item:focus-visible .photo-wrapper,
+        .envelope:focus-visible {
+            outline: 3px solid #C97171;
+            outline-offset: 4px;
+        }
+
+        /* Меньше движения для тех, кто включил это в настройках системы */
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                animation-delay: 0s !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
 </style>
 </head>
 <body>
     <!-- ЭКРАН КОНВЕРТА -->
     <div class="envelope-screen" id="envelope-screen">
         <div class="envelope-container">
-            <div class="envelope" id="envelope">
+            <div class="envelope" id="envelope" role="button" tabindex="0" aria-label="Открыть конверт">
                 <div class="envelope-flap"></div>
                 <div class="envelope-label">
                     <h2>💌</h2>
                     <p>Для Иры</p>
                 </div>
                 <div class="timer-container">
-                    <div class="timer-display" id="timerDisplay">10</div>
+                    <div class="timer-display" id="timerDisplay">5</div>
                     <div class="timer-label">сек</div>
                 </div>
             </div>
@@ -857,7 +958,7 @@
         
         
         <!-- Аудио элемент -->
-        <audio id="background-music" preload="auto" autoplay muted>
+        <audio id="background-music" preload="auto">
             <source src="./music.mp3" type="audio/mpeg">
             Ваш браузер не поддерживает аудио элемент.
         </audio>
@@ -1046,7 +1147,7 @@
     </div>
     
     <!-- Лайтбокс -->
-    <div class="lightbox-overlay" id="lightbox" role="dialog" aria-label="Просмотр фото">
+    <div class="lightbox-overlay" id="lightbox" role="dialog" aria-modal="true" aria-label="Просмотр фото">
         <div class="lightbox-content">
             <button class="lightbox-close" onclick="closeLightbox()" aria-label="Закрыть" title="Закрыть (Esc)">×</button>
             <div class="zoom-level" id="zoom-level"></div>
@@ -1064,9 +1165,11 @@
 
     <!-- Кнопки управления музыкой -->
         <div class="sound-controls">
-            <button class="sound-btn" id="sound-toggle" title="Включить/выключить музыку (M)" aria-label="Включить музыку">♪</button>
+            <button class="sound-btn muted" id="sound-toggle" title="Включить музыку (M)" aria-label="Включить музыку (M)">🔇</button>
             <button class="sound-btn repeat-on" id="repeat-toggle" title="Включить/выключить повтор (R)" aria-label="Повторение включено">🔁</button>
         </div>
+
+    <button class="music-hint" id="music-hint" hidden>🎵 Нажми, чтобы включить музыку</button>
 
     
 
@@ -1119,7 +1222,6 @@
         let tapStartY = 0;
         
 
-        let soundEnabled = true;
         let repeatEnabled = true;
         let envelopeOpened = false;
         
@@ -1134,19 +1236,38 @@
         
         const backgroundMusic = document.getElementById('background-music');
 
-        // Разблокировка звука
-        document.addEventListener('click', function unlockAudio() {
-            if (backgroundMusic && backgroundMusic.muted) {
-                backgroundMusic.muted = false;
-                document.removeEventListener('click', unlockAudio);
-            }
-        });
         const soundToggle = document.getElementById('sound-toggle');
         const repeatToggle = document.getElementById('repeat-toggle');
-        
+        const musicHint = document.getElementById('music-hint');
+
         // Устанавливаем начальное состояние музыки
         backgroundMusic.loop = true;
         backgroundMusic.volume = 0.5; // 50% громкости
+
+        // ===== МУЗЫКА =====
+        // Кнопка всегда отражает, играет ли музыка на самом деле
+        function updateSoundButton() {
+            const playing = !backgroundMusic.paused;
+            const label = playing ? 'Выключить музыку (M)' : 'Включить музыку (M)';
+            soundToggle.classList.toggle('muted', !playing);
+            soundToggle.textContent = playing ? '♪' : '🔇';
+            soundToggle.title = label;
+            soundToggle.setAttribute('aria-label', label);
+        }
+        backgroundMusic.addEventListener('play', updateSoundButton);
+        backgroundMusic.addEventListener('pause', updateSoundButton);
+
+        // Браузер может заблокировать звук без нажатия — тогда просим нажать
+        function playMusic() {
+            return backgroundMusic.play()
+                .then(() => { musicHint.hidden = true; })
+                .catch(() => { musicHint.hidden = false; });
+        }
+
+        // Пока висит подсказка, любое нажатие включает музыку
+        document.addEventListener('click', function() {
+            if (!musicHint.hidden) playMusic();
+        });
 
         // Функция открытия конверта
         function openEnvelope() {
@@ -1155,52 +1276,52 @@
 
             envelope.classList.add('open');
 
+            // Запускаем музыку сразу, пока действует нажатие пользователя (важно для iOS)
+            backgroundMusic.currentTime = 0;
+            playMusic();
+
             setTimeout(() => {
                 envelopeScreen.classList.add('hidden');
                 mainContent.style.opacity = '1';
-
-                // Запускаем музыку
-                backgroundMusic.currentTime = 0; // Начинаем с начала
-
-                const playPromise = backgroundMusic.play();
-                if (playPromise !== undefined) {
-                    playPromise.catch(error => {
-                        console.log('⚠️ Ошибка воспроизведения музыки:', error);
-                        // Пытаемся еще раз
-                        setTimeout(() => backgroundMusic.play().catch(e => console.log('Вторая попытка не прошла')), 500);
-                    });
-                }
             }, 800);
         }
 
-        // ===== ТАЙМЕР ОТ 10 СЕКУНД =====
-        function startTimer() {
-            let timeLeft = 10;
-            const timerDisplay = document.getElementById('timerDisplay');
-
-            if (!timerDisplay) {
-                console.warn('⚠️ Таймер не найден!');
-                // Если таймер не найден, открываем сразу
-                setTimeout(openEnvelope, 100);
-                return;
+        // ===== ТАЙМЕР: 5 СЕКУНД, ПРИ ПОВТОРНЫХ ВИЗИТАХ — 3 =====
+        function isRepeatVisit() {
+            try {
+                const seen = localStorage.getItem('collage-seen');
+                localStorage.setItem('collage-seen', '1');
+                return seen === '1';
+            } catch (e) {
+                return false;
             }
+        }
 
+        function startTimer() {
+            let timeLeft = isRepeatVisit() ? 3 : 5;
+            const timerDisplay = document.getElementById('timerDisplay');
+            timerDisplay.textContent = timeLeft;
 
             const timerInterval = setInterval(() => {
-                timerDisplay.textContent = timeLeft;
-
-                if (timeLeft <= 3) {
-                    timerDisplay.style.color = '#E74C3C'; // Красный цвет
-                    timerDisplay.style.animation = 'timerPulse 0.5s ease-in-out infinite'; // Быстрее пульсирует
+                if (envelopeOpened) {
+                    clearInterval(timerInterval);
+                    return;
                 }
 
                 timeLeft--;
 
-                if (timeLeft < 0) {
+                if (timeLeft <= 0) {
                     clearInterval(timerInterval);
                     timerDisplay.textContent = '🎉';
                     timerDisplay.style.fontSize = '3em';
                     openEnvelope();
+                    return;
+                }
+
+                timerDisplay.textContent = timeLeft;
+                if (timeLeft <= 2) {
+                    timerDisplay.style.color = '#E74C3C'; // Красный цвет
+                    timerDisplay.style.animation = 'timerPulse 0.5s ease-in-out infinite'; // Быстрее пульсирует
                 }
             }, 1000);
         }
@@ -1212,49 +1333,30 @@
             setTimeout(startTimer, 100);
         }
 
-        // ===== МОЖНО КЛИКНУТЬ НА КОНВЕРТ ЧТОБЫ ОТКРЫТЬ РАНЬШЕ =====
-        if (envelope) {
-            envelope.addEventListener('click', function() {
-                if (!envelopeOpened) {
-                    openEnvelope();
-                }
-            });
-        }
-
-
+        // ===== МОЖНО НАЖАТЬ НА КОНВЕРТ ЧТОБЫ ОТКРЫТЬ РАНЬШЕ =====
+        envelope.addEventListener('click', openEnvelope);
 
         // Обработка кнопки звука
         soundToggle.addEventListener('click', function() {
-            soundEnabled = !soundEnabled;
-            if (soundEnabled) {
-                backgroundMusic.play().catch(e => console.log('Автозапуск заблокирован браузером'));
-                soundToggle.classList.remove('muted');
-                soundToggle.textContent = '♪';
-                soundToggle.title = 'Выключить музыку (M)';
+            if (backgroundMusic.paused) {
+                playMusic();
             } else {
                 backgroundMusic.pause();
-                soundToggle.classList.add('muted');
-                soundToggle.textContent = '🔇';
-                soundToggle.title = 'Включить музыку (M)';
+                musicHint.hidden = true;
             }
         });
-        
+
         // Обработка кнопки повтора
         repeatToggle.addEventListener('click', function() {
             repeatEnabled = !repeatEnabled;
             backgroundMusic.loop = repeatEnabled;
-            
-            if (repeatEnabled) {
-                repeatToggle.classList.remove('repeat-off');
-                repeatToggle.classList.add('repeat-on');
-                repeatToggle.title = 'Повтор включен (R)';
-            } else {
-                repeatToggle.classList.add('repeat-off');
-                repeatToggle.classList.remove('repeat-on');
-                repeatToggle.title = 'Повтор выключен (R)';
-            }
+            const label = repeatEnabled ? 'Повтор включен (R)' : 'Повтор выключен (R)';
+            repeatToggle.classList.toggle('repeat-on', repeatEnabled);
+            repeatToggle.classList.toggle('repeat-off', !repeatEnabled);
+            repeatToggle.title = label;
+            repeatToggle.setAttribute('aria-label', label);
         });
-        
+
         // Клавиши для быстрого управления
         document.addEventListener('keydown', function(e) {
             if (e.key.toLowerCase() === 'm') {
@@ -1263,22 +1365,30 @@
             if (e.key.toLowerCase() === 'r') {
                 repeatToggle.click();
             }
-            if (e.key === 'Enter' && !envelopeOpened) {
+            if ((e.key === 'Enter' || e.key === ' ') && !envelopeOpened) {
+                e.preventDefault();
                 openEnvelope();
             }
         });
-        
-        // Попытка запустить звук при первом клике
-        document.addEventListener('click', function() {
-            if (soundEnabled && backgroundMusic.paused && envelopeOpened) {
-                backgroundMusic.play().catch(e => console.log('Невозможно запустить звук'));
-            }
+
+        // Фото открываются с клавиатуры (Enter / пробел)
+        document.querySelectorAll('.collage .photo-item').forEach((item, index) => {
+            item.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault();
+                    openLightbox(index);
+                }
+            });
         });
-        
+
+        let focusBeforeLightbox = null;
+
         function openLightbox(index) {
+            focusBeforeLightbox = document.activeElement;
             currentPhotoIndex = index;
             showPhoto();
             lightbox.classList.add('active');
+            lightbox.querySelector('.lightbox-close').focus();
             document.body.style.overflow = 'hidden';
             
             lightbox.addEventListener('touchstart', handleTouchStart, false);
@@ -1294,6 +1404,7 @@
             lightbox.removeEventListener('touchstart', handleTouchStart, false);
             lightbox.removeEventListener('touchmove', handleTouchMove, false);
             lightbox.removeEventListener('touchend', handleTouchEnd, false);
+            if (focusBeforeLightbox) focusBeforeLightbox.focus();
         }
         
         function setZoom(zoom) {
@@ -1307,6 +1418,7 @@
             setZoom(1);
             lightboxImage.src = images[currentPhotoIndex];
             lightboxWish.textContent = imageWishes[currentPhotoIndex];
+            lightboxImage.alt = 'Фото ' + (currentPhotoIndex + 1) + ': ' + imageWishes[currentPhotoIndex];
             lightboxCounter.textContent = (currentPhotoIndex + 1) + ' / ' + images.length;
         }
         
