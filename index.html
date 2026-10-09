@@ -933,6 +933,272 @@
                 transition-duration: 0.01ms !important;
             }
         }
+
+        /* ===== ИСТОРИИ (полноэкранный просмотр как в Instagram) ===== */
+        .stories {
+            position: fixed;
+            inset: 0;
+            z-index: 1500;
+            display: none;
+            overflow: hidden;
+            background: #1a1412;
+            color: white;
+            touch-action: none;
+            -webkit-user-select: none;
+            user-select: none;
+        }
+
+        .stories.active {
+            display: block;
+        }
+
+        .stories:focus {
+            outline: none;
+        }
+
+        /* Размытая копия фото на фоне — заполняет экран и скрывает небольшой размер снимков */
+        .story-bg {
+            position: absolute;
+            inset: -10%;
+            background-size: cover;
+            background-position: center;
+            filter: blur(28px) brightness(0.55) saturate(1.1);
+        }
+
+        .story-bg.plain {
+            /* !important перекрывает фото, заданное в style у предыдущего слайда */
+            background-image: radial-gradient(circle at 30% 20%, #E39A8F 0%, #C97171 40%, #6B3A3A 100%) !important;
+            filter: none;
+        }
+
+        .story-stage {
+            position: absolute;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 96px 20px 150px;
+        }
+
+        .story-photo {
+            --kb-r0: -1deg;
+            --kb-r1: 1deg;
+            --kb-x: -2%;
+            --kb-y: -1%;
+            background: white;
+            padding: 10px 10px 14px;
+            border-radius: 6px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+            max-width: min(92vw, 520px);
+            animation: kenBurns var(--story-duration, 5s) ease-out forwards;
+        }
+
+        .story-photo img {
+            display: block;
+            pointer-events: none; /* иначе браузер начинает перетаскивать картинку и сбивает свайп */
+            -webkit-user-drag: none;
+            max-width: 100%;
+            max-height: calc(100vh - 280px);
+            max-height: calc(100dvh - 280px);
+            width: auto;
+            height: auto;
+            border-radius: 3px;
+        }
+
+        @keyframes kenBurns {
+            from {
+                transform: scale(0.96) translate(0, 0) rotate(var(--kb-r0));
+            }
+            to {
+                transform: scale(1.06) translate(var(--kb-x), var(--kb-y)) rotate(var(--kb-r1));
+            }
+        }
+
+        .story-wish {
+            position: absolute;
+            left: 20px;
+            right: 20px;
+            bottom: calc(56px + env(safe-area-inset-bottom));
+            text-align: center;
+            font-family: 'Pacifico', cursive;
+            font-size: clamp(22px, 6.5vw, 34px);
+            line-height: 1.35;
+            text-shadow: 0 2px 14px rgba(0, 0, 0, 0.7);
+            animation: storyFadeUp 0.8s ease-out 0.3s both;
+            transition: opacity 0.2s;
+        }
+
+        @keyframes storyFadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(16px);
+            }
+            to {
+                opacity: 1;
+                transform: none;
+            }
+        }
+
+        .story-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 2;
+            padding: calc(10px + env(safe-area-inset-top)) 12px 28px;
+            background: linear-gradient(rgba(0, 0, 0, 0.45), transparent);
+            transition: opacity 0.2s;
+        }
+
+        .story-bars {
+            display: flex;
+            gap: 3px;
+        }
+
+        .story-bar {
+            flex: 1;
+            height: 3px;
+            border-radius: 2px;
+            background: rgba(255, 255, 255, 0.3);
+            overflow: hidden;
+        }
+
+        .story-bar span {
+            display: block;
+            width: 0;
+            height: 100%;
+            background: white;
+        }
+
+        .story-meta {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 10px;
+        }
+
+        .story-counter {
+            font-family: 'Lobster', cursive;
+            font-size: 18px;
+            text-shadow: 0 1px 6px rgba(0, 0, 0, 0.5);
+        }
+
+        .story-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .story-btn {
+            width: 40px;
+            height: 40px;
+            border: none;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.18);
+            color: white;
+            font-size: 20px;
+            line-height: 1;
+            cursor: pointer;
+            -webkit-backdrop-filter: blur(6px);
+            backdrop-filter: blur(6px);
+        }
+
+        /* Пока палец удерживается — прячем интерфейс, как в Instagram */
+        .stories.holding .story-header,
+        .stories.holding .story-wish {
+            opacity: 0;
+        }
+
+        .stories.paused .story-photo,
+        .stories.paused .story-wish,
+        .stories.paused .story-card {
+            animation-play-state: paused;
+        }
+
+        .story-card {
+            text-align: center;
+            max-width: 520px;
+            animation: storyFadeUp 0.9s ease-out both;
+        }
+
+        .story-card h2 {
+            font-family: 'Lobster', cursive;
+            font-weight: 400;
+            font-size: clamp(42px, 12vw, 76px);
+            line-height: 1.1;
+            text-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .story-card p {
+            font-family: 'Pacifico', cursive;
+            font-size: clamp(20px, 6vw, 30px);
+            margin-top: 14px;
+            opacity: 0.92;
+        }
+
+        .story-card .story-hint {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-top: 48px;
+            opacity: 0.75;
+        }
+
+        .story-actions {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 12px;
+            margin-top: 36px;
+        }
+
+        .story-action {
+            padding: 13px 24px;
+            border: none;
+            border-radius: 999px;
+            background: white;
+            color: #A04E4E;
+            font-size: 16px;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        .story-action.secondary {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .story-btn:focus-visible,
+        .story-action:focus-visible {
+            outline: 3px solid white;
+            outline-offset: 3px;
+        }
+
+        /* Подсказка про музыку поверх историй — под шапкой, чтобы не закрывать пожелание */
+        body.stories-open .music-hint {
+            z-index: 1600;
+            top: calc(90px + env(safe-area-inset-top));
+            bottom: auto;
+        }
+
+        .replay-btn {
+            margin-top: 18px;
+            padding: 10px 22px;
+            border: none;
+            border-radius: 999px;
+            background: #C97171;
+            color: white;
+            font-size: 15px;
+            font-family: inherit;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(201, 113, 113, 0.35);
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .story-photo {
+                animation: none;
+            }
+        }
 </style>
 </head>
 <body>
@@ -967,6 +1233,7 @@
             <div class="header">
                 <h1>🎉 С днем рождения! 🎉</h1>
                 <p class="subtitle">дорогая сестренка</p>
+                <button class="replay-btn" id="replay-stories">▶ Смотреть историю</button>
             </div>
             
             <div class="collage">
@@ -1146,6 +1413,22 @@
         </div>
     </div>
     
+    <!-- Истории: полноэкранный показ фото по одному -->
+    <div class="stories" id="stories" role="dialog" aria-modal="true" aria-label="История из фото" tabindex="-1">
+        <div class="story-bg"></div>
+        <div class="story-stage" aria-live="polite"></div>
+        <div class="story-header">
+            <div class="story-bars"></div>
+            <div class="story-meta">
+                <div class="story-counter"></div>
+                <div class="story-buttons">
+                    <button class="story-btn" id="story-sound" aria-label="Включить музыку">🔇</button>
+                    <button class="story-btn" id="story-close" aria-label="Закрыть историю и показать все фото" title="Все фото (Esc)">×</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Лайтбокс -->
     <div class="lightbox-overlay" id="lightbox" role="dialog" aria-modal="true" aria-label="Просмотр фото">
         <div class="lightbox-content">
@@ -1283,6 +1566,7 @@
             setTimeout(() => {
                 envelopeScreen.classList.add('hidden');
                 mainContent.style.opacity = '1';
+                openStories(0);
             }, 800);
         }
 
@@ -1558,6 +1842,275 @@
         } else {
             setTimeout(initializePhotoAnimations, 100);
         }
+    </script>
+
+    <!-- ===== ИСТОРИИ ===== -->
+    <script>
+        (function() {
+            const PHOTO_MS = 5000; // сколько показывается одно фото
+            const INTRO_MS = 4000; // заставка
+
+            const stories = document.getElementById('stories');
+            const storyBg = stories.querySelector('.story-bg');
+            const stage = stories.querySelector('.story-stage');
+            const barsEl = stories.querySelector('.story-bars');
+            const counter = stories.querySelector('.story-counter');
+            const storySound = document.getElementById('story-sound');
+            const storyClose = document.getElementById('story-close');
+
+            const slides = [{ type: 'intro' }]
+                .concat(images.map((src, index) => ({ type: 'photo', src, index, wish: imageWishes[index] })))
+                .concat([{ type: 'outro' }]);
+
+            // Лёгкое движение камеры — четыре варианта по кругу
+            const kenBurns = [
+                ['-1deg', '1deg', '-2%', '-1%'],
+                ['1deg', '-1deg', '2%', '-2%'],
+                ['-2deg', '0deg', '1%', '2%'],
+                ['2deg', '0deg', '-2%', '1%']
+            ];
+
+            const bars = slides.map(() => {
+                const bar = document.createElement('div');
+                bar.className = 'story-bar';
+                bar.appendChild(document.createElement('span'));
+                barsEl.appendChild(bar);
+                return bar.firstChild;
+            });
+
+            let current = 0;
+            let elapsed = 0;
+            let lastTs = null;
+            let paused = false;
+            let pausedByHidden = false;
+            let raf = null;
+
+            function durationOf(slide) {
+                if (slide.type === 'photo') return PHOTO_MS;
+                if (slide.type === 'intro') return INTRO_MS;
+                return Infinity; // финальный экран ждёт выбора
+            }
+
+            function card(title, subtitle, extra) {
+                const el = document.createElement('div');
+                el.className = 'story-card';
+                const h = document.createElement('h2');
+                h.textContent = title;
+                const p = document.createElement('p');
+                p.textContent = subtitle;
+                el.append(h, p);
+                if (extra) el.appendChild(extra);
+                return el;
+            }
+
+            function render() {
+                const slide = slides[current];
+                bars.forEach((bar, i) => { bar.style.width = i < current ? '100%' : '0%'; });
+                stage.innerHTML = '';
+
+                if (slide.type === 'photo') {
+                    counter.textContent = (slide.index + 1) + ' / ' + images.length;
+                    storyBg.classList.remove('plain');
+                    storyBg.style.backgroundImage = 'url("' + slide.src + '")';
+
+                    const [r0, r1, x, y] = kenBurns[slide.index % kenBurns.length];
+                    const figure = document.createElement('figure');
+                    figure.className = 'story-photo';
+                    figure.style.setProperty('--kb-r0', r0);
+                    figure.style.setProperty('--kb-r1', r1);
+                    figure.style.setProperty('--kb-x', x);
+                    figure.style.setProperty('--kb-y', y);
+                    figure.style.setProperty('--story-duration', PHOTO_MS + 'ms');
+                    const img = document.createElement('img');
+                    img.src = slide.src;
+                    img.alt = 'Фото ' + (slide.index + 1);
+                    img.draggable = false;
+                    figure.appendChild(img);
+
+                    const wish = document.createElement('div');
+                    wish.className = 'story-wish';
+                    wish.textContent = slide.wish;
+                    stage.append(figure, wish);
+                } else {
+                    counter.textContent = 'Для Иры 💌';
+                    storyBg.classList.add('plain');
+
+                    if (slide.type === 'intro') {
+                        const hint = document.createElement('div');
+                        hint.className = 'story-hint';
+                        hint.innerHTML = 'Нажми справа — дальше, слева — назад<br>Удерживай палец — пауза';
+                        stage.appendChild(card('С днем рождения!', 'дорогая сестренка', hint));
+                    } else {
+                        const actions = document.createElement('div');
+                        actions.className = 'story-actions';
+                        const again = document.createElement('button');
+                        again.className = 'story-action';
+                        again.textContent = '↺ Смотреть снова';
+                        again.addEventListener('click', () => go(0));
+                        const all = document.createElement('button');
+                        all.className = 'story-action secondary';
+                        all.textContent = 'Все фото';
+                        all.addEventListener('click', closeStories);
+                        actions.append(again, all);
+                        stage.appendChild(card('С любовью к тебе', '✨ 💕 ✨', actions));
+                    }
+                }
+
+                // Заранее подгружаем следующие фото, чтобы не было пауз
+                slides.slice(current + 1, current + 3).forEach(next => {
+                    if (next.type === 'photo') new Image().src = next.src;
+                });
+            }
+
+            function go(index) {
+                current = Math.max(0, Math.min(slides.length - 1, index));
+                elapsed = 0;
+                render();
+            }
+
+            function next() {
+                if (current < slides.length - 1) go(current + 1);
+            }
+
+            function prev() {
+                go(current - 1);
+            }
+
+            function tick(ts) {
+                if (lastTs === null) lastTs = ts;
+                const dt = ts - lastTs;
+                lastTs = ts;
+                if (!paused) {
+                    elapsed += dt;
+                    const duration = durationOf(slides[current]);
+                    bars[current].style.width = Math.min(100, elapsed / duration * 100) + '%';
+                    if (elapsed >= duration) next();
+                }
+                raf = requestAnimationFrame(tick);
+            }
+
+            function setPaused(value) {
+                paused = value;
+                stories.classList.toggle('paused', value);
+            }
+
+            function openStories(index) {
+                stories.classList.add('active');
+                document.body.classList.add('stories-open');
+                document.body.style.overflow = 'hidden';
+                setPaused(false);
+                go(index || 0);
+                lastTs = null;
+                cancelAnimationFrame(raf);
+                raf = requestAnimationFrame(tick);
+                stories.focus();
+            }
+
+            function closeStories() {
+                stories.classList.remove('active', 'holding');
+                document.body.classList.remove('stories-open');
+                document.body.style.overflow = '';
+                cancelAnimationFrame(raf);
+                raf = null;
+                document.body.scrollTop = 0;
+                window.scrollTo(0, 0);
+            }
+
+            window.openStories = openStories;
+
+            // ===== Касания: тап слева/справа, свайп, удержание, свайп вниз =====
+            let downX = null;
+            let downY = 0;
+            let holdTimer = null;
+            let holding = false;
+
+            stories.addEventListener('pointerdown', function(e) {
+                if (e.target.closest('button')) return;
+                downX = e.clientX;
+                downY = e.clientY;
+                holding = false;
+                holdTimer = setTimeout(() => {
+                    holding = true;
+                    setPaused(true);
+                    stories.classList.add('holding');
+                }, 250);
+            });
+
+            // Палец поехал — это свайп, а не удержание
+            stories.addEventListener('pointermove', function(e) {
+                if (downX === null || holding) return;
+                if (Math.abs(e.clientX - downX) > 15 || Math.abs(e.clientY - downY) > 15) {
+                    clearTimeout(holdTimer);
+                }
+            });
+
+            stories.addEventListener('pointerup', function(e) {
+                clearTimeout(holdTimer);
+                if (downX === null) return;
+                const dx = e.clientX - downX;
+                const dy = e.clientY - downY;
+                downX = null;
+
+                if (holding) {
+                    holding = false;
+                    stories.classList.remove('holding');
+                    setPaused(false);
+                    return;
+                }
+                if (dy > 80 && Math.abs(dy) > Math.abs(dx)) {
+                    closeStories();
+                } else if (Math.abs(dx) > 50) {
+                    if (dx < 0) next(); else prev();
+                } else if (Math.abs(dx) < 15 && Math.abs(dy) < 15) {
+                    if (e.clientX < window.innerWidth / 3) prev(); else next();
+                }
+            });
+
+            stories.addEventListener('pointercancel', function() {
+                clearTimeout(holdTimer);
+                downX = null;
+                if (holding) {
+                    holding = false;
+                    stories.classList.remove('holding');
+                    setPaused(false);
+                }
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (!stories.classList.contains('active')) return;
+                if (e.key === 'ArrowRight') next();
+                if (e.key === 'ArrowLeft') prev();
+                if (e.key === 'Escape') closeStories();
+                if (e.key === ' ' && !e.target.closest('button')) {
+                    e.preventDefault();
+                    setPaused(!paused);
+                }
+            });
+
+            // Пауза, если свернули вкладку или приложение
+            document.addEventListener('visibilitychange', function() {
+                if (!stories.classList.contains('active')) return;
+                if (document.hidden && !paused) {
+                    pausedByHidden = true;
+                    setPaused(true);
+                } else if (!document.hidden && pausedByHidden) {
+                    pausedByHidden = false;
+                    setPaused(false);
+                }
+            });
+
+            storyClose.addEventListener('click', closeStories);
+            storySound.addEventListener('click', () => soundToggle.click());
+            document.getElementById('replay-stories').addEventListener('click', () => openStories(0));
+
+            function updateStorySound() {
+                const playing = !backgroundMusic.paused;
+                storySound.textContent = playing ? '♪' : '🔇';
+                storySound.setAttribute('aria-label', playing ? 'Выключить музыку' : 'Включить музыку');
+            }
+            backgroundMusic.addEventListener('play', updateStorySound);
+            backgroundMusic.addEventListener('pause', updateStorySound);
+        })();
     </script>
 
     <!-- ===== РЕГИСТРАЦИЯ SERVICE WORKER ДЛЯ PWA ===== -->
